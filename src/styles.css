@@ -1,0 +1,30 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  margin: 0 auto;
+  padding: 20px;
+  max-width: 900px;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+h2 {
+  color: #333333;
+}
+
+.form {
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
