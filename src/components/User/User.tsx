@@ -7,11 +7,10 @@ interface User {
     username: string;
     email: string;
     password: string;
-    role: string;
 }
 const User: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
-    const [newUser, setNewUser] = useState({ username: '', email: '', password:'', role: '' });
+    const [newUser, setNewUser] = useState({ username: '', email: '', password:'' });
 
     useEffect(() => {
 
@@ -24,17 +23,16 @@ const User: React.FC = () => {
     const handleSubmit = () => {
         createUser(newUser).then(() => {
             setUsers([...users, newUser]);
-            setNewUser({ username: '', email: '', password: '', role: '' });
+            setNewUser({ username: '', email: '', password: ''});
         });
     };
-    console.log(users)
     return (
         <div className="section">
             <h2>User Management</h2>
             <ul>
                 {users.map((user) => (
                     <div key={user.id}>
-                    <li >{user.username} - {user.email} - {user.role}</li>
+                    <li >{user.username} - {user.email}</li>
                     </div>
                 ))}
             </ul>
@@ -56,12 +54,6 @@ const User: React.FC = () => {
                     placeholder="Password"
                     value={newUser.password}
                     onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                />
-                <input
-                    type="text"
-                    placeholder="Role"
-                    value={newUser.role}
-                    onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
                 />
                 <button onClick={handleSubmit}>Create User</button>
             </div>
