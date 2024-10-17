@@ -22,6 +22,7 @@ const UserPreferences: React.FC = () => {
     }, []);
 
     const handleSubmit = () => {
+        console.log(newPreference)
         createUserPreference(newPreference).then(() => {
             setPreferences([...preferences, newPreference]);
             setNewPreference({ preferred_region: '', preferred_metrics: '', time_range: '' });

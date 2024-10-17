@@ -2,14 +2,11 @@ import axios from 'axios';
 
 const backendUrl: String = "http://localhost:8081"
 
-const authHeader = () => {
-
-    const getLocalStorageItem = localStorage.getItem('user');
-    const user = getLocalStorageItem !== null && JSON.parse(getLocalStorageItem);
+function authHeader() {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
 
     if (user && user.accessToken) {
-        // Assuming the token is a JWT token and should have a "Bearer" type
-        return {Authorization: `Bearer ${user.accessToken}`};
+        return { Authorization: `Bearer ${user.accessToken}` };
     } else {
         return {};
     }
@@ -49,8 +46,30 @@ export const getUserPreferences = async () => {
     return response.data;
 };
 
-export const createUserPreference = async (preference: any) => {
-    await axios.post(`${backendUrl}/user/preferences/create`, preference);
+export const createUserPreference = async (preferences: any) => {
+    const getLocalStorageItem = localStorage.getItem('user');
+    const localStorageUser = getLocalStorageItem !== null && JSON.parse(getLocalStorageItem);
+
+    if (!localStorageUser || !localStorageUser.accessToken) {
+        throw new Error('User not logged in or missing token');
+    }
+
+    try {
+        const response = await axios.post(`${backendUrl}/user/preferences/create`, {
+            id: localStorageUser.id, // Assuming this is userId
+            preferred_region: preferences.preferred_region,
+            preferred_metrics: preferences.preferred_metrics,
+            time_range: preferences.time_range
+        }, {
+            headers: authHeader() // Send JWT token in the headers
+        });
+
+        return response.data;
+    } catch (error) {
+        // @ts-ignore
+        console.error('Failed to create user preference:', error.response || error);
+        throw error; // Re-throw the error for handling
+    }
 };
 
 export const getDataSnapshots = async () => {
