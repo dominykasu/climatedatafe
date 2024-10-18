@@ -4,7 +4,14 @@ import { getUsers, deleteUser, updateUser } from '../../services/api';
 const ModeratorPanel: React.FC = () => {
     const [users, setUsers] = useState<any[]>([]);
     const [editableUserId, setEditableUserId] = useState<number | null>(null);
-    const [userInput, setUserInput] = useState({ username: '', email: '' });
+    const [userInput, setUserInput] = useState({ username: '', email: '', password: '', role: [{name:''}]  });
+
+
+
+    // @ts-ignore
+    const role = JSON.parse(localStorage.getItem('user')).roles[0];
+
+
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -21,12 +28,12 @@ const ModeratorPanel: React.FC = () => {
 
     const handleEdit = (user: any) => {
         setEditableUserId(user.id);
-        setUserInput({ username: user.username, email: user.email });
+        setUserInput({ username: user.username, email: user.email, password: '', role: [{name:user.role}] });
     };
 
     const handleSave = async () => {
         if (editableUserId !== null) {
-            await updateUser(editableUserId, userInput);
+            await updateUser(editableUserId, userInput);  // Send updated user data to the backend
             setUsers(users.map(user => (user.id === editableUserId ? { ...user, ...userInput } : user)));
             setEditableUserId(null);
         }
@@ -45,6 +52,8 @@ const ModeratorPanel: React.FC = () => {
                     <th>ID</th>
                     <th>Username</th>
                     <th>Email</th>
+                    <th>Password</th>
+                    <th>Role</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -76,14 +85,49 @@ const ModeratorPanel: React.FC = () => {
                         </td>
                         <td>
                             {editableUserId === user.id ? (
+                                <input
+                                    type="password"
+                                    value={userInput.password}
+                                    onChange={(e) => setUserInput({ ...userInput, password: e.target.value })}
+                                />
+                            ) : (
+                                '********'
+                            )}
+                        </td>
+                        <td>
+                            {editableUserId === user.id ? (
+                                <select
+                                    value={userInput.role[0].name}
+                                    onChange={(e) => setUserInput({ ...userInput, role: [{name: e.target.value}] })}
+                                >
+                                    <option value="ROLE_USER">User</option>
+                                    <option value="ROLE_ADMIN">Admin</option>
+                                    <option value="ROLE_MODERATOR">Moderator</option>
+                                </select>
+                            ) : (
+                                user.role[0].name
+                            )}
+                        </td>
+                        <td>
+                            {editableUserId === user.id ? (
                                 <>
                                     <button onClick={handleSave}>Save</button>
                                     <button onClick={handleCancel}>Cancel</button>
                                 </>
                             ) : (
                                 <>
-                                    <button onClick={() => handleEdit(user)}>Edit</button>
-                                    <button onClick={() => handleDelete(user.id)}>Delete</button>
+                                    {/* Conditionally render buttons based on userRole */}
+                                    {role === 'ROLE_ADMIN' && (
+                                        <>
+                                            <button onClick={() => handleEdit(user)}>Edit</button>
+                                            <button onClick={() => handleDelete(user.id)}>Delete</button>
+                                        </>
+                                    )}
+                                    {role === 'ROLE_MODERATOR' && (
+                                        <>
+                                            <span>No actions allowed</span>
+                                        </>
+                                    )}
                                 </>
                             )}
                         </td>

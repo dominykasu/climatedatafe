@@ -2,6 +2,51 @@ import axios from 'axios';
 
 const backendUrl: String = "http://localhost:8081"
 
+const API_KEY = process.env.REACT_APP_OPENWEATHERMAPP_API_KEY;
+
+// const API_URL = "https://api.openweathermap.org/data/2.5/forecast";
+
+const towns = [
+    { name: "Vilnius", code: "vilnius" },
+    { name: "Kaunas", code: "kaunas" },
+    { name: "Klaipėda", code: "klaipeda" },
+    { name: "Šiauliai", code: "siauliai" },
+    { name: "Panevėžys", code: "panevezys" },
+    { name: "Alytus", code: "alytus" },
+    { name: "Marijampolė", code: "marijampole" },
+    { name: "Mažeikiai", code: "mazeikiai" },
+    { name: "Jonava", code: "jonava" },
+    { name: "Utena", code: "utena" },
+];
+export const fetchWeatherData = async (townName: string) => {
+    try {
+        const response = await axios.get(`${API_URL}`, {
+            params: {
+                q: townName,
+                appid: API_KEY,
+                units: "metric"
+            }
+        });
+
+        const forecastData = response.data.list.map((forecast: any) => ({
+            date: forecast.dt_txt.split(" ")[0],
+            temperature: forecast.main.temp,
+        }));
+
+        return forecastData.slice(0, 10);
+    } catch (error) {
+        console.error(`Error fetching data for ${townName}:`, error);
+        return [];
+    }
+};
+export const fetchWeatherForAllTowns = async () => {
+    const allData: { [key: string]: any[] } = {};
+    for (const town of towns) {
+        const data = await fetchWeatherData(town.name);
+        allData[town.name] = data;
+    }
+    return allData;
+};
 function authHeader() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
