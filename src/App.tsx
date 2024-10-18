@@ -1,22 +1,24 @@
-import React from 'react';
-import User from './components/User/User';
-import UserPreferences from './components/UserPreferences/UserPreferences';
-import DataSnapshots from './components/DataSnapshots/DataSnapshots';
-import Alerts from './components/Alerts/Alerts';
-import './styles.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from "./components/Home/Home";
 import LogIn from "./pages/LoginPage/LogIn";
-
+import SignUp from "./components/SignUp/SignUp";
+import Navbar from "./components/NavBar/Navbar";
+import ModeratorPanel from "./components/ModeratorPanel/ModeratorPanel";
 const App: React.FC = () => {
     return (
-        <div className="container">
-            <h1>Global Climate Data Dashboard1</h1>
-            <LogIn />
-            <User />
-            <UserPreferences />
-            <DataSnapshots />
-            <Alerts />
-        </div>
+        <Router>
+            <Navbar />
+            <div className="container">
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/login" element={<LogIn />} />
+                    <Route path="/signup" element={<SignUp />} />
+                    <Route path="/moderator" element={<ModeratorPanel />} />
+                </Routes>
+            </div>
+        </Router>
     );
 };
 
 export default App;
+

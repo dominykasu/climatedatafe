@@ -81,3 +81,11 @@ export const getAlerts = async () => {
     const response = await axios.get(`${backendUrl}/alerts/all`, {headers: authHeader()});
     return response.data;
 };
+
+export const deleteUser = async (id: number) => {
+    await axios.delete(`${backendUrl}/users/${id}`, { headers: authHeader() });
+};
+
+export const updateUser = async (id: number, userData: any) => {
+    await axios.put(`${backendUrl}/users/${id}`, userData, { headers: authHeader() });
+};

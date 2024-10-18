@@ -6,11 +6,10 @@ interface User {
     id?: number;
     username: string;
     email: string;
-    password: string;
 }
 const User: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
-    const [newUser, setNewUser] = useState({ username: '', email: '', password:'' });
+    const [newUser, setNewUser] = useState({ username: '', email: '', password: '' });
 
     useEffect(() => {
 
