@@ -1,13 +1,13 @@
-// Home.tsx
 import React, { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import {fetchWeatherData, fetchWeatherForAllTowns} from "../../services/api";
-import axios from "axios";
+import {fetchWeatherForAllTowns, saveWeatherData} from "../../services/api";
+
 
 
 const Home: React.FC = () => {
     const [weatherData, setWeatherData] = useState<{ [key: string]: any[] }>({});
-
+    // @ts-ignore
+    const user = JSON.parse(localStorage.getItem("user"));
     useEffect(() => {
         const fetchData = async () => {
             const allData = await fetchWeatherForAllTowns();
@@ -16,6 +16,11 @@ const Home: React.FC = () => {
 
         fetchData();
     }, []);
+
+    const handleSave = (townName: string, data: any) => {
+        console.log(data)
+         saveWeatherData(townName, data, user.username);
+    };
 
     return (
         <div>
@@ -26,9 +31,7 @@ const Home: React.FC = () => {
                     <ResponsiveContainer width="90%" height={250}>
                         <LineChart
                             data={weatherData[townName]}
-                            margin={{
-                                top: 10, right: 30, left: 0, bottom: 0,
-                            }}
+                            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                         >
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="date" />
@@ -38,6 +41,9 @@ const Home: React.FC = () => {
                             <Line type="monotone" dataKey="temperature" stroke="#8884d8" activeDot={{ r: 8 }} />
                         </LineChart>
                     </ResponsiveContainer>
+                    <button onClick={() => handleSave(townName, weatherData[townName])}>
+                        Save Data
+                    </button>
                 </div>
             ))}
         </div>

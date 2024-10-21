@@ -4,7 +4,7 @@ const backendUrl: String = "http://localhost:8081"
 
 const API_KEY = process.env.REACT_APP_OPENWEATHERMAPP_API_KEY;
 
-// const API_URL = "https://api.openweathermap.org/data/2.5/forecast";
+const API_URL = "https://api.openweathermap.org/data/2.5/forecast";
 
 const towns = [
     { name: "Vilnius", code: "vilnius" },
@@ -47,6 +47,58 @@ export const fetchWeatherForAllTowns = async () => {
     }
     return allData;
 };
+export const saveWeatherData = async (townName: string, data: any, username: string) => {
+    try {
+        const requestBody = {
+            region: townName,
+            metric: 'temperature',
+            value: data,
+            username: username
+        };
+        console.log(requestBody)
+        const response = await axios.post(`${backendUrl}/data/snapshots/create`, requestBody, {
+            // @ts-ignore
+            headers: authHeader(),
+        });
+        console.log("Saved snapshot:", response.data);
+    } catch (error) {
+        console.error("Error saving data:", error);
+    }
+};
+
+
+export const fetchSavedData = async (username: string) => {
+    try {
+
+        const response = await fetch(`${backendUrl}/data/snapshots/all/${username}`, {
+            // @ts-ignore
+            headers: authHeader(),
+        });
+
+        if (response.headers.get('content-type')?.includes('application/json')) {
+            return await response.json();
+        } else {
+            const errorText = await response.text(); // Read the response as text (HTML)
+            throw new Error(`Failed to fetch data: ${errorText}`);
+        }
+    } catch (error) {
+        console.error('Error fetching saved data:', error);
+        throw error;
+    }
+};
+
+
+export const deleteSavedData = async (id: number) => {
+    try {
+        await axios.delete(`${backendUrl}/data/snapshots/${id}`, {
+            // @ts-ignore
+            headers: authHeader(),
+        });
+        console.log(`Deleted snapshot with id: ${id}`);
+    } catch (error) {
+        console.error(`Error deleting snapshot with id ${id}:`, error);
+    }
+};
 function authHeader() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -63,10 +115,10 @@ export const logIn = async (credentials: { username: string; password: string })
         if (response.data.accessToken) {
             localStorage.setItem("user", JSON.stringify(response.data));
         }
-        return response.data; // Handle the response as needed
+        return response.data;
     } catch (error) {
         console.error("Login failed:", error);
-        throw error; // Rethrow or handle the error
+        throw error;
     }
 };
 export const getUsers = async () => {
@@ -101,19 +153,19 @@ export const createUserPreference = async (preferences: any) => {
 
     try {
         const response = await axios.post(`${backendUrl}/user/preferences/create`, {
-            id: localStorageUser.id, // Assuming this is userId
+            id: localStorageUser.id,
             preferred_region: preferences.preferred_region,
             preferred_metrics: preferences.preferred_metrics,
             time_range: preferences.time_range
         }, {
-            headers: authHeader() // Send JWT token in the headers
+            headers: authHeader()
         });
 
         return response.data;
     } catch (error) {
         // @ts-ignore
         console.error('Failed to create user preference:', error.response || error);
-        throw error; // Re-throw the error for handling
+        throw error;
     }
 };
 

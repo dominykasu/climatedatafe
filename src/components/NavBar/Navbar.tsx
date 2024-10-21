@@ -19,6 +19,7 @@ const Navbar: React.FC = () => {
                 {localStorageUser && (localStorageUser.roles.includes('ROLE_ADMIN') || localStorageUser.roles.includes('ROLE_MODERATOR')) && (
                     <Link to="/moderator">Moderator Panel</Link>
                 )}
+                {localStorageUser && <Link to="/saved-data">Saved Data</Link>}
             </div>
             <div className="navbar-right">
                 {localStorageUser ? (

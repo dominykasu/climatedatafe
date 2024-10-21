@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import { useNavigate } from 'react-router-dom';
 import './LogIn.css';
 import { logIn } from "../../services/api";
 
@@ -7,14 +7,14 @@ const LogIn: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const navigate = useNavigate(); // Use useNavigate instead of useHistory
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             await logIn({ username, password });
             alert('Login successful!');
-            navigate('/'); // Navigate to homepage after login
+            navigate('/');
         } catch (error) {
             setErrorMessage(`${error}`);
         }
