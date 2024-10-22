@@ -4,7 +4,7 @@ import { getUsers, deleteUser, updateUser } from '../../services/api';
 const ModeratorPanel: React.FC = () => {
     const [users, setUsers] = useState<any[]>([]);
     const [editableUserId, setEditableUserId] = useState<number | null>(null);
-    const [userInput, setUserInput] = useState({ username: '', email: '', password: '', role: [{name:''}]  });
+    const [userInput, setUserInput] = useState({ username: '', email: '', password: '', roles: [{name:''}]  });
 
 
 
@@ -28,7 +28,7 @@ const ModeratorPanel: React.FC = () => {
 
     const handleEdit = (user: any) => {
         setEditableUserId(user.id);
-        setUserInput({ username: user.username, email: user.email, password: '', role: [{name:user.role}] });
+        setUserInput({ username: user.username, email: user.email, password: '', roles: [{name:user.roles}] });
     };
 
     const handleSave = async () => {
@@ -97,15 +97,15 @@ const ModeratorPanel: React.FC = () => {
                         <td>
                             {editableUserId === user.id ? (
                                 <select
-                                    value={userInput.role[0].name}
-                                    onChange={(e) => setUserInput({ ...userInput, role: [{name: e.target.value}] })}
+                                    value={userInput.roles[0].name}
+                                    onChange={(e) => setUserInput({ ...userInput, roles: [{name: e.target.value}] })}
                                 >
                                     <option value="ROLE_USER">User</option>
                                     <option value="ROLE_ADMIN">Admin</option>
                                     <option value="ROLE_MODERATOR">Moderator</option>
                                 </select>
                             ) : (
-                                user.role[0].name
+                                user.roles[0].name
                             )}
                         </td>
                         <td>
@@ -116,7 +116,7 @@ const ModeratorPanel: React.FC = () => {
                                 </>
                             ) : (
                                 <>
-                                    {/* Conditionally render buttons based on userRole */}
+
                                     {role === 'ROLE_ADMIN' && (
                                         <>
                                             <button onClick={() => handleEdit(user)}>Edit</button>

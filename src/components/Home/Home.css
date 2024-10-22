@@ -1,0 +1,25 @@
+.logInMainContainer {
+    margin: 15px;
+}
+
+.townButtonContainer {
+    padding-bottom: 30px;
+}
+.townButtons {
+    margin-right: 10px;
+    padding: 10px;
+}
+.saveButton {
+    padding: 10px;
+    background-color: lightblue;
+    margin-bottom: 20px;
+}
+.saveSuccessMessage {
+    color:green;
+}
+.saveErrorMessage {
+    color:red;
+}
+.townGraphContainer {
+    margin-bottom: 50px;
+}

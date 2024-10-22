@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     LineChart,
     Line,
@@ -16,6 +16,7 @@ import {
     getUserPreferences,
     fetchWeatherData,
 } from "../../services/api";
+import "./Home.css"
 
 const Home: React.FC = () => {
     const [weatherData, setWeatherData] = useState<{ [key: string]: any[] }>({});
@@ -94,19 +95,18 @@ const Home: React.FC = () => {
     };
 
     return (
-        <div>
+        <div className='logInMainContainer'>
             <h1>10-Day Weather Forecast for Lithuania's Largest Towns</h1>
 
-            <div style={{ marginBottom: "20px" }}>
+            <div className='townButtonContainer'>
                 {towns.map((town) => (
                     <button
                         key={town}
                         onClick={() => handleTownClick(town)}
                         style={{
-                            marginRight: "10px",
-                            padding: "10px",
                             backgroundColor: selectedTowns.includes(town) ? "lightgreen" : "lightgray",
                         }}
+                        className='townButtons'
                     >
                         {town}
                     </button>
@@ -114,27 +114,28 @@ const Home: React.FC = () => {
             </div>
 
             <div>
-                <button onClick={handleSavePreferences} style={{ padding: "10px", backgroundColor: "lightblue", marginBottom: "20px" }}>
+                <button onClick={handleSavePreferences}
+                        className='saveButton'>
                     Save Preferences
                 </button>
-                {saveSuccess === true && <p style={{ color: "green" }}>Preferences saved successfully!</p>}
-                {saveSuccess === false && <p style={{ color: "red" }}>Failed to save preferences. Please try again.</p>}
+                {saveSuccess === true && <p className='saveSuccessMessage'>Preferences saved successfully!</p>}
+                {saveSuccess === false && <p className='saveErrorMessage'>Failed to save preferences. Please try again.</p>}
             </div>
 
             {selectedTowns.map((townName) => (
-                <div key={townName} style={{ marginBottom: "50px" }}>
+                <div key={townName} className="townGraphContainer">
                     <h2>{townName}</h2>
                     <ResponsiveContainer width="90%" height={250}>
                         <LineChart
                             data={weatherData[townName]}
-                            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                            margin={{top: 10, right: 30, left: 0, bottom: 0}}
                         >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="date" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Line type="monotone" dataKey="temperature" stroke="#8884d8" activeDot={{ r: 8 }} />
+                            <CartesianGrid strokeDasharray="3 3"/>
+                            <XAxis dataKey="date"/>
+                            <YAxis/>
+                            <Tooltip/>
+                            <Legend/>
+                            <Line type="monotone" dataKey="temperature" stroke="#8884d8" activeDot={{r: 8}}/>
                         </LineChart>
                     </ResponsiveContainer>
                     <button onClick={() => handleSaveWeatherData(townName, weatherData[townName])}>
