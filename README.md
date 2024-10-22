@@ -1,46 +1,140 @@
-# Getting Started with Create React App
+Project Documentation: Climate Data App
+This documentation provides a detailed guide to set up, run, and manage the Climate Data App. The project consists of both a backend API and a frontend React application. Users can register, log in, and view weather data for various towns using interactive charts powered by Recharts.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Table of Contents
+Tech Stack
+Prerequisites
+Backend Setup
+Frontend Setup
+How to Run the Application
+User Registration
+Usage Guide
+Common Issues and Troubleshooting
+Tech Stack
+Backend: Java, Spring Boot, Hibernate, PostgreSQL, RESTful API
+Frontend: React, TypeScript, Axios, Recharts
+Database: PostgreSQL
+Authentication: JWT-based authentication
+Prerequisites
+Before setting up the project, ensure you have the following installed:
 
-## Available Scripts
+Node.js (v14+)
+npm (comes with Node.js)
+Java Development Kit (JDK) (v11+)
+Maven (Apache Maven 3.6+)
+PostgreSQL (or any other relational database)
+Backend Setup
+1. Clone the Repository
+bash
+Copy code
+git clone <your-repo-url>
+cd climate-data-backend
+2. Configure the PostgreSQL Database
+Ensure you have PostgreSQL running locally or in the cloud. Create a database and configure the connection details.
 
-In the project directory, you can run:
+Open src/main/resources/application.properties and configure your PostgreSQL credentials:
 
-### `npm start`
+properties
+Copy code
+spring.datasource.url=jdbc:postgresql://localhost:5432/climatedata
+spring.datasource.username=your_postgres_user
+spring.datasource.password=your_postgres_password
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+3. Build and Run the Backend
+bash
+Copy code
+mvn clean install
+mvn spring-boot:run
+This will start your backend server at http://localhost:8081.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+4. REST API Endpoints Overview
+Authentication:
+POST /auth/signin: User login
+POST /auth/signup: User registration
+User Preferences:
+GET /user/preferences: Get user weather preferences
+POST /user/preferences: Save user preferences
+Weather Data:
+GET /weather?town=<town>: Fetch weather data for the specified town.
+Frontend Setup
+1. Navigate to Frontend Directory
+bash
+Copy code
+cd ../climate-data-frontend
+2. Install Dependencies
+Run the following command to install all required Node.js dependencies:
 
-### `npm test`
+bash
+Copy code
+npm install
+This will install React, Recharts, Axios, and other necessary packages.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. Set Up Environment Variables (Optional)
+If needed, create an .env file in the frontend directory and add the backend URL:
 
-### `npm run build`
+arduino
+Copy code
+REACT_APP_API_URL=http://localhost:8081
+4. Run the Frontend
+bash
+Copy code
+npm start
+This will start the React application at http://localhost:3000.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+How to Run the Application
+Once both the backend and frontend are set up:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Start the Backend:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Run the Spring Boot server at http://localhost:8081.
+Start the Frontend:
 
-### `npm run eject`
+Start the React frontend at http://localhost:3000.
+The frontend will communicate with the backend to fetch user data, preferences, and weather information.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+User Registration
+Step 1: Open the frontend at http://localhost:3000.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Step 2: Click on the Sign Up button to register.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Username: Must be between 3-20 characters.
+Email: Must be a valid email address.
+Password: Must be at least 6 characters long.
+Step 3: After successful registration, log in using the provided credentials.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Step 4: Once logged in, you can select towns from the list and view 10-day weather forecasts for each. These are displayed using Recharts in the form of line charts.
 
-## Learn More
+Usage Guide
+Login/Signup: Register an account or log in with existing credentials.
+Select Towns: After logging in, you can select towns to view weather forecasts.
+Weather Data: The weather data for selected towns will be displayed on interactive Recharts line charts.
+Save Preferences: Click the Save Preferences button to save your selected towns as preferences. These will be loaded automatically the next time you log in.
+Common Issues and Troubleshooting
+Database Connection Failure:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Make sure PostgreSQL is running and the connection details are correctly configured in the backend application.properties file.
+CORS Errors:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+If you face CORS issues, ensure the backend allows requests from http://localhost:3000. You can add the following to the backend configuration:
+
+java
+Copy code
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**").allowedOrigins("http://localhost:3000");
+    }
+}
+Frontend Not Connecting to Backend:
+
+Ensure the frontend REACT_APP_API_URL is correctly pointing to http://localhost:8081 or the correct backend URL.
+Login/Registration Validation Failures:
+
+Check the validation rules for username, email, and password in the backend's SignupRequest class, and ensure proper error messages are handled on the frontend.
+Conclusion
+Once everything is set up, the Climate Data App allows users to register, log in, select preferred towns, and view weather forecasts for Lithuania's largest cities. The app saves user preferences, enabling a personalized experience. The app also demonstrates how to integrate a Java Spring Boot backend with a React frontend, including JWT authentication and interactive charting using Recharts.
+
+If you encounter any issues, feel free to raise them in the repository's issue tracker.
