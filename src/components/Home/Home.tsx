@@ -1,31 +1,127 @@
 import React, { useEffect, useState } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import {fetchWeatherForAllTowns, saveWeatherData} from "../../services/api";
-
-
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer,
+} from "recharts";
+import {
+    fetchWeatherForAllTowns,
+    saveWeatherData,
+    createUserPreference,
+    getUserPreferences,
+    fetchWeatherData,
+} from "../../services/api";
 
 const Home: React.FC = () => {
     const [weatherData, setWeatherData] = useState<{ [key: string]: any[] }>({});
-    // @ts-ignore
-    const user = JSON.parse(localStorage.getItem("user"));
+    const [selectedTowns, setSelectedTowns] = useState<string[]>([]);
+    const [saveSuccess, setSaveSuccess] = useState<boolean | null>(null);
+    const towns = [
+        "Vilnius", "Kaunas", "Klaipėda", "Šiauliai", "Panevėžys",
+        "Alytus", "Marijampolė", "Mažeikiai", "Jonava", "Utena"
+    ];
+
+    const user = JSON.parse(localStorage.getItem("user") || '{}');
+
     useEffect(() => {
         const fetchData = async () => {
-            const allData = await fetchWeatherForAllTowns();
-            setWeatherData(allData);
+            try {
+                const preferences = await getUserPreferences(user.id);
+                const userPreferredRegions = preferences.map((pref: any) => pref.preferredRegion);
+
+                if (userPreferredRegions.length > 0) {
+                    setSelectedTowns(userPreferredRegions);
+                    const allData = {};
+                    for (const town of userPreferredRegions) {
+                        // @ts-ignore
+                        allData[town] = await fetchWeatherData(town);
+                    }
+                    setWeatherData(allData);
+                } else {
+                    setSelectedTowns(towns);
+                    const allData = await fetchWeatherForAllTowns();
+                    setWeatherData(allData);
+                }
+            } catch (error) {
+                console.error('Error fetching preferences:', error);
+                setSelectedTowns(towns);
+                const allData = await fetchWeatherForAllTowns();
+                setWeatherData(allData);
+            }
         };
 
         fetchData();
     }, []);
 
-    const handleSave = (townName: string, data: any) => {
-        console.log(data)
-         saveWeatherData(townName, data, user.username);
+    const handleTownClick = async (town: string) => {
+        setSelectedTowns((prevSelectedTowns) => {
+            const isSelected = prevSelectedTowns.includes(town);
+            const updatedSelectedTowns = isSelected
+                ? prevSelectedTowns.filter((selectedTown) => selectedTown !== town)
+                : [...prevSelectedTowns, town];
+
+            if (!isSelected) {
+                fetchWeatherData(town).then((data) => {
+                    setWeatherData((prevData) => ({
+                        ...prevData,
+                        [town]: data,
+                    }));
+                });
+            }
+
+            return updatedSelectedTowns;
+        });
+    };
+
+    const handleSavePreferences = async () => {
+        const validSelectedTowns = selectedTowns.filter((town) => town !== null && towns.includes(town));
+
+        try {
+            await createUserPreference(validSelectedTowns);
+            setSaveSuccess(true);
+        } catch (error) {
+            setSaveSuccess(false);
+        }
+    };
+
+    const handleSaveWeatherData = (townName: string, data: any) => {
+        saveWeatherData(townName, data, user.username);
     };
 
     return (
         <div>
             <h1>10-Day Weather Forecast for Lithuania's Largest Towns</h1>
-            {Object.keys(weatherData).map((townName) => (
+
+            <div style={{ marginBottom: "20px" }}>
+                {towns.map((town) => (
+                    <button
+                        key={town}
+                        onClick={() => handleTownClick(town)}
+                        style={{
+                            marginRight: "10px",
+                            padding: "10px",
+                            backgroundColor: selectedTowns.includes(town) ? "lightgreen" : "lightgray",
+                        }}
+                    >
+                        {town}
+                    </button>
+                ))}
+            </div>
+
+            <div>
+                <button onClick={handleSavePreferences} style={{ padding: "10px", backgroundColor: "lightblue", marginBottom: "20px" }}>
+                    Save Preferences
+                </button>
+                {saveSuccess === true && <p style={{ color: "green" }}>Preferences saved successfully!</p>}
+                {saveSuccess === false && <p style={{ color: "red" }}>Failed to save preferences. Please try again.</p>}
+            </div>
+
+            {selectedTowns.map((townName) => (
                 <div key={townName} style={{ marginBottom: "50px" }}>
                     <h2>{townName}</h2>
                     <ResponsiveContainer width="90%" height={250}>
@@ -41,7 +137,7 @@ const Home: React.FC = () => {
                             <Line type="monotone" dataKey="temperature" stroke="#8884d8" activeDot={{ r: 8 }} />
                         </LineChart>
                     </ResponsiveContainer>
-                    <button onClick={() => handleSave(townName, weatherData[townName])}>
+                    <button onClick={() => handleSaveWeatherData(townName, weatherData[townName])}>
                         Save Data
                     </button>
                 </div>

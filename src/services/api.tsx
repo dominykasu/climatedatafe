@@ -66,7 +66,6 @@ export const saveWeatherData = async (townName: string, data: any, username: str
     }
 };
 
-
 export const fetchSavedData = async (username: string) => {
     try {
 
@@ -138,12 +137,15 @@ export const createUser = async (user: any) => {
     await axios.post(`${backendUrl}/api/auth/signup`, user);
 };
 
-export const getUserPreferences = async () => {
-    const response = await axios.get(`${backendUrl}/user/preferences/all`, {headers: authHeader()});
+export const getUserPreferences = async (userId: number) => {
+    const response = await axios.get(`${backendUrl}/user/preferences/all`, {
+        headers: authHeader(),
+        params: { userId },
+    });
     return response.data;
 };
 
-export const createUserPreference = async (preferences: any) => {
+export const createUserPreference = async (selectedTowns: string[]) => {
     const getLocalStorageItem = localStorage.getItem('user');
     const localStorageUser = getLocalStorageItem !== null && JSON.parse(getLocalStorageItem);
 
@@ -152,19 +154,18 @@ export const createUserPreference = async (preferences: any) => {
     }
 
     try {
-        const response = await axios.post(`${backendUrl}/user/preferences/create`, {
-            id: localStorageUser.id,
-            preferred_region: preferences.preferred_region,
-            preferred_metrics: preferences.preferred_metrics,
-            time_range: preferences.time_range
-        }, {
-            headers: authHeader()
-        });
+        const response = await axios.post(
+            `${backendUrl}/user/preferences/create`,
+            selectedTowns, // Send the array of selected towns
+            {
+                headers: authHeader(),
+                params: { userId: localStorageUser.id }
+            }
+        );
 
         return response.data;
     } catch (error) {
-        // @ts-ignore
-        console.error('Failed to create user preference:', error.response || error);
+        console.error('Failed to create user preference:', error);
         throw error;
     }
 };
