@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { createUser } from '../../services/api';
+import './SignUp.css';
 
 const SignUp: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -12,45 +13,54 @@ const SignUp: React.FC = () => {
         try {
             await createUser({ username, email, password });
             alert('Sign-up successful!');
-        } catch (error) {
-            setErrorMessage(`${error}`);
+        } catch (error: any) {
+            if (error.response && error.response.data && error.response.data.message) {
+                // If the backend returns a specific error message, display it
+                setErrorMessage(error.response.data.message);
+            } else {
+                // Generic error handling
+                setErrorMessage("An error occurred during sign-up. Please try again.");
+            }
         }
     };
 
     return (
         <div className="signup-container">
-            <h2>Sign Up</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Username:</label>
+            <h2 className="signup-title">Sign Up</h2>
+            <form onSubmit={handleSubmit} className="signup-form">
+                <div className="form-group">
+                    <label className="form-label">Username:</label>
                     <input
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
+                        className="form-input"
                     />
                 </div>
-                <div>
-                    <label>Email:</label>
+                <div className="form-group">
+                    <label className="form-label">Email:</label>
                     <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        className="form-input"
                     />
                 </div>
-                <div>
-                    <label>Password:</label>
+                <div className="form-group">
+                    <label className="form-label">Password:</label>
                     <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        className="form-input"
                     />
                 </div>
-                <button type="submit">Sign Up</button>
+                <button type="submit" className="signup-button">Sign Up</button>
             </form>
-            {errorMessage && <p className="error">{errorMessage}</p>}
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
         </div>
     );
 };

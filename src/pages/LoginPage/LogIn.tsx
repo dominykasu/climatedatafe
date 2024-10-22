@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import './LogIn.css';
-import { logIn } from "../../services/api";
+import {logIn} from "../../services/api";
 
 const LogIn: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -12,11 +12,11 @@ const LogIn: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await logIn({ username, password });
+            await logIn({username, password});
             alert('Login successful!');
             navigate('/');
-        } catch (error) {
-            setErrorMessage(`${error}`);
+        } catch (error: any) {
+            setErrorMessage(`${error.response.data.message}`);
         }
     };
 

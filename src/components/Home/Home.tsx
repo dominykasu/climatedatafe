@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     LineChart,
     Line,
@@ -37,9 +37,8 @@ const Home: React.FC = () => {
 
                 if (userPreferredRegions.length > 0) {
                     setSelectedTowns(userPreferredRegions);
-                    const allData = {};
+                    const allData: { [key: string]: any[] } = {};
                     for (const town of userPreferredRegions) {
-                        // @ts-ignore
                         allData[town] = await fetchWeatherData(town);
                     }
                     setWeatherData(allData);
@@ -125,19 +124,23 @@ const Home: React.FC = () => {
             {selectedTowns.map((townName) => (
                 <div key={townName} className="townGraphContainer">
                     <h2>{townName}</h2>
-                    <ResponsiveContainer width="90%" height={250}>
-                        <LineChart
-                            data={weatherData[townName]}
-                            margin={{top: 10, right: 30, left: 0, bottom: 0}}
-                        >
-                            <CartesianGrid strokeDasharray="3 3"/>
-                            <XAxis dataKey="date"/>
-                            <YAxis/>
-                            <Tooltip/>
-                            <Legend/>
-                            <Line type="monotone" dataKey="temperature" stroke="#8884d8" activeDot={{r: 8}}/>
-                        </LineChart>
-                    </ResponsiveContainer>
+                    {weatherData[townName] ? (
+                        <ResponsiveContainer width="90%" height={250}>
+                            <LineChart
+                                data={weatherData[townName]}
+                                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="date" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Line type="monotone" dataKey="temperature" stroke="#8884d8" activeDot={{ r: 8 }} />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <p>Loading weather data for {townName}...</p>
+                    )}
                     <button onClick={() => handleSaveWeatherData(townName, weatherData[townName])}>
                         Save Data
                     </button>
