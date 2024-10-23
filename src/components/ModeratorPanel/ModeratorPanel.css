@@ -1,0 +1,28 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+td input, td select {
+    width: 100%; /* Take up the full width of the table cell */
+    box-sizing: border-box; /* Ensure padding and border are included in width */
+    padding: 6px; /* Add some padding to make it look more consistent */
+}
+
+td input[type="password"] {
+    font-family: 'Courier New', Courier, monospace; /* Ensure password input shows dots */
+}
+
+button {
+    margin-right: 5px;
+}

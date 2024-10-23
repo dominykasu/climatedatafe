@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getUsers, deleteUser, updateUser } from '../../services/api';
-
+import "./ModeratorPanel.css"
 const ModeratorPanel: React.FC = () => {
     const [users, setUsers] = useState<any[]>([]);
     const [editableUserId, setEditableUserId] = useState<number | null>(null);
